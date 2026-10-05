@@ -1,0 +1,11 @@
+{
+  "name": "historical-savings-decision-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:browser": "node scripts/generate-historical-data.js && node scripts/build-browser-bundle.js",
+    "test": "node --test --test-isolation=none",
+    "serve": "node scripts/serve.js"
+  }
+}

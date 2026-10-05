@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Historisk sparsimulator baserad på SIX Portfolio Return Index.">
+  <title>Små beslut. Stor skillnad över tid.</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <main id="app">
+    <section id="loading-screen" class="screen centered active" aria-live="polite">
+      <p class="eyebrow">SIXPRX · 2006–2026</p>
+      <h1>Laddar historisk data…</h1>
+    </section>
+
+    <section id="start-screen" class="screen centered" aria-labelledby="start-title">
+      <div class="start-shell">
+        <div class="index-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <p class="eyebrow">Historisk besluts­simulator</p>
+        <h1 id="start-title">Små beslut.<br><em>Stor skillnad</em> över tid.</h1>
+        <p class="start-message">Samma marknad. Samma startkapital.<br>Samma tidsperiod. Fyra olika beslut.</p>
+        <div class="start-facts" aria-label="Vald simulering">
+          <div><span>Index</span><strong>SIXPRX</strong></div>
+          <div><span>Historisk period</span><strong id="start-period">—</strong></div>
+          <div><span>Startkapital</span><strong id="start-capital">—</strong></div>
+        </div>
+        <p class="index-description">SIX Portfolio Return Index · Svensk aktiemarknad inklusive utdelningar</p>
+        <div class="button-row">
+          <button class="button primary" id="start-button">Starta</button>
+          <button class="button secondary" data-open-settings>Inställningar</button>
+        </div>
+        <p class="disclaimer">Historisk avkastning är ingen garanti för framtida avkastning.</p>
+      </div>
+    </section>
+
+    <section id="presentation-screen" class="screen presentation" aria-label="Historisk simulering">
+      <header class="presentation-header">
+        <div>
+          <p class="eyebrow">SIX Portfolio Return Index</p>
+          <h2 id="historical-date">—</h2>
+        </div>
+        <div class="period-chip" id="period-chip">—</div>
+      </header>
+
+      <div class="portfolio-grid" id="portfolio-grid"></div>
+
+      <figure class="chart-panel">
+        <figcaption>
+          <span>Portföljvärde</span>
+          <span class="chart-note">Historisk utveckling · kronor</span>
+        </figcaption>
+        <svg id="portfolio-chart" role="img" aria-label="De fyra portföljernas historiska värdeutveckling"></svg>
+      </figure>
+
+      <footer class="playback-bar">
+        <div class="playback-actions">
+          <button class="icon-button" id="pause-button">Pausa</button>
+          <button class="icon-button hidden" id="resume-button">Fortsätt</button>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progress-fill"></span></div>
+        <div class="end-actions hidden" id="end-actions">
+          <button class="button secondary compact" id="replay-button">Kör igen</button>
+          <button class="button primary compact" id="analysis-button">Visa analys</button>
+          <button class="button secondary compact" data-open-settings>Inställningar</button>
+        </div>
+      </footer>
+    </section>
+
+    <section id="analysis-screen" class="screen analysis" aria-labelledby="analysis-title">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Slutresultat · <span id="analysis-period">—</span></p>
+          <h1 id="analysis-title">Vad skapade skillnaden?</h1>
+        </div>
+        <button class="button secondary compact" id="analysis-back">Tillbaka till resultatet</button>
+      </header>
+      <div id="analysis-summary" class="analysis-summary"></div>
+      <div id="analysis-steps" class="analysis-steps"></div>
+      <section class="cost-table-panel">
+        <div class="section-heading">
+          <p class="eyebrow">Faktiska avdrag</p>
+          <h2>Avgifter, skatt och insättningar</h2>
+        </div>
+        <div class="table-wrap"><table id="cost-table"></table></div>
+      </section>
+      <p class="disclaimer analysis-disclaimer">Resultaten bygger på faktiska historiska SIXPRX-månadsavkastningar. Historisk avkastning är ingen garanti för framtida avkastning.</p>
+    </section>
+
+    <section id="settings-screen" class="screen settings" aria-labelledby="settings-title">
+      <header class="page-header">
+        <div><p class="eyebrow">Simuleringsantaganden</p><h1 id="settings-title">Inställningar</h1></div>
+        <button class="text-button" id="settings-cancel">Avbryt</button>
+      </header>
+      <form id="settings-form">
+        <div class="settings-grid">
+          <label>Startkapital <span><input name="startingCapital" type="number" min="0" step="10000"> kr</span></label>
+          <label>Historisk period <select name="periodYears"><option value="5">5 år</option><option value="10">10 år</option><option value="15">15 år</option><option value="20">20 år</option></select></label>
+          <label>Standardfondavgift <span><input name="standardFundFeePct" type="number" min="0" step="0.01"> %</span></label>
+          <label>Ursprunglig försäkringsavgift <span><input name="originalInsuranceFeePct" type="number" min="0" step="0.01"> %</span></label>
+          <label>Reducerad försäkringsavgift <span><input name="reducedInsuranceFeePct" type="number" min="0" step="0.01"> %</span></label>
+          <label>Högre exponering <span><input name="exposureMultiplier" type="number" min="0.1" step="0.1"> ×</span></label>
+          <label>Fondavgift, högre exponering <span><input name="higherExposureFundFeePct" type="number" min="0" step="0.01"> %</span></label>
+          <label>Månadssparande <span><input name="monthlySaving" type="number" min="0" step="100"> kr</span></label>
+          <label>Årlig skatt <span><input name="annualTaxPct" type="number" min="0" step="0.01"> %</span></label>
+          <label>Antagen inflation <span><input name="annualInflationPct" type="number" min="0" step="0.1"> %</span></label>
+          <label>Inflationsjustering <select name="inflationEnabled"><option value="true">På</option><option value="false">Av</option></select></label>
+          <label>Speltid för 20 år <select name="playbackSeconds20Years"><option value="30">30 sekunder</option><option value="60">60 sekunder</option><option value="90">90 sekunder</option><option value="120">120 sekunder</option></select></label>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="button secondary" id="reset-settings">Återställ standardvärden</button>
+          <button type="submit" class="button primary">Spara och räkna om</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="error-screen" class="screen centered" role="alert">
+      <p class="eyebrow">Ett fel uppstod</p><h1>Simuleringen kunde inte starta.</h1><p id="error-message"></p>
+    </section>
+  </main>
+  <script src="data/sixprx.js"></script>
+  <script src="js/app.bundle.js"></script>
+</body>
+</html>
