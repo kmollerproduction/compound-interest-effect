@@ -18,6 +18,7 @@ test("five portfolio definitions isolate the three decisions and combine them on
     { exposure: 1, fundFeePct: .3, insuranceFeePct: .65, monthlyContribution: 200 },
     { exposure: 1.4, fundFeePct: 1, insuranceFeePct: 0, monthlyContribution: 200 }
   ]);
+  assert.deepEqual(definitions.map(({ hasMonthlyContributions }) => hasMonthlyContributions), [false, false, false, true, true]);
 });
 
 test("all portfolios match when differences are disabled", () => {

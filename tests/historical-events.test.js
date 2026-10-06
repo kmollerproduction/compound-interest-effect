@@ -37,13 +37,14 @@ test("revealing annotations cannot alter the financial Y-axis domain", () => {
   assert.deepEqual(after, before);
 });
 
-test("annotation lane allocation prevents overlap at compact desktop widths", () => {
+test("annotation lane allocation prevents overlap with presentation-sized event boxes", () => {
   const revealed = getRevealedHistoricalEvents(HISTORICAL_EVENTS, history, 240);
-  const placed = placeHistoricalEventBoxes(revealed, { domainEnd: 240, plotLeft: 76, plotWidth: 945, boxWidth: 242 });
+  const boxWidth = 520;
+  const placed = placeHistoricalEventBoxes(revealed, { domainEnd: 240, plotLeft: 76, plotWidth: 1600, boxWidth });
   for (let i = 0; i < placed.length; i += 1) {
     for (let j = i + 1; j < placed.length; j += 1) {
       if (placed[i].level !== placed[j].level) continue;
-      assert.ok(placed[i].boxX + 242 + 8 <= placed[j].boxX || placed[j].boxX + 242 + 8 <= placed[i].boxX);
+      assert.ok(placed[i].boxX + boxWidth + 8 <= placed[j].boxX || placed[j].boxX + boxWidth + 8 <= placed[i].boxX);
     }
   }
 });

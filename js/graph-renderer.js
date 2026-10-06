@@ -89,21 +89,21 @@ export class GraphRenderer {
     }
 
     const eventLayer = node("g", { class: "historical-events" });
-    const eventBoxWidth = 324;
-    const eventBoxHeight = 58;
+    const eventBoxWidth = 520;
+    const eventBoxHeight = 82;
     const revealedEvents = getRevealedHistoricalEvents(HISTORICAL_EVENTS, result.history, position);
     const placedEvents = placeHistoricalEventBoxes(revealedEvents, { domainEnd: xDomain.end, plotLeft: margin.left, plotWidth, boxWidth: eventBoxWidth });
     for (const event of placedEvents) {
       const anchorX = event.anchorX;
       const anchorY = margin.top + plotHeight;
-      const boxY = anchorY - 22 - eventBoxHeight - event.level * 70;
+      const boxY = anchorY - 22 - eventBoxHeight - event.level * 98;
       const boxX = event.boxX;
-      const connectorX = Math.max(boxX + 14, Math.min(anchorX, boxX + eventBoxWidth - 14));
+      const connectorX = Math.max(boxX + 18, Math.min(anchorX, boxX + eventBoxWidth - 18));
       eventLayer.append(node("line", { x1: anchorX, y1: anchorY - 2, x2: connectorX, y2: boxY + eventBoxHeight, class: "event-connector" }));
       eventLayer.append(node("circle", { cx: anchorX, cy: anchorY - 2, r: 3, class: "event-anchor" }));
       eventLayer.append(node("rect", { x: boxX, y: boxY, width: eventBoxWidth, height: eventBoxHeight, rx: 6, class: "event-box" }));
-      eventLayer.append(node("text", { x: boxX + 12, y: boxY + 21, class: "event-title" }, event.title));
-      eventLayer.append(node("text", { x: boxX + 12, y: boxY + 43, class: "event-description" }, event.description));
+      eventLayer.append(node("text", { x: boxX + 16, y: boxY + 30, class: "event-title" }, event.title));
+      eventLayer.append(node("text", { x: boxX + 16, y: boxY + 62, class: "event-description" }, event.description));
     }
     this.svg.append(eventLayer);
 

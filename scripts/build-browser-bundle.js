@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 const sourceFiles = [
   "config.js",
   "data-loader.js",
+  "inflation.js",
   "rolling-returns.js",
   "tax.js",
   "simulation-engine.js",

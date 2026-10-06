@@ -8,11 +8,11 @@ export function annualPctToMonthlyRate(annualPct) {
 
 export function buildPortfolioDefinitions(settings) {
   const financialDefinitions = {
-    reference: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0 },
-    lowerFee: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: 0 },
-    higherExposure: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0 },
-    monthlySaving: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: settings.monthlySaving },
-    allThree: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: settings.monthlySaving }
+    reference: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0, hasMonthlyContributions: false },
+    lowerFee: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: 0, hasMonthlyContributions: false },
+    higherExposure: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0, hasMonthlyContributions: false },
+    monthlySaving: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: settings.monthlySaving, hasMonthlyContributions: true },
+    allThree: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: settings.monthlySaving, hasMonthlyContributions: true }
   };
   return PORTFOLIO_META.map((meta) => ({ ...meta, ...financialDefinitions[meta.id] }));
 }

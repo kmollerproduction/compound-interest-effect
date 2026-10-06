@@ -16,16 +16,14 @@
 
     <section id="start-screen" class="screen centered" aria-labelledby="start-title">
       <div class="start-shell">
-        <div class="index-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-        <p class="eyebrow">Historisk besluts­simulator</p>
         <h1 id="start-title">Små beslut.<br><em>Stor skillnad</em> över tid.</h1>
-        <p class="start-message">Samma marknad. Samma startkapital.<br>Tre beslut. Fem portföljer.</p>
-        <div class="start-facts" aria-label="Vald simulering">
-          <div><span>Index</span><strong>SIXPRX</strong></div>
+        <div class="start-facts" aria-label="Vald simulering och historiska källor">
+          <div><span>Marknad</span><strong>SIXPRX</strong><small>Svensk totalavkastning</small></div>
+          <div><span>Inflation</span><strong>KPI, SCB</strong><small>Svenskt konsumentprisindex</small></div>
           <div><span>Historisk period</span><strong id="start-period">—</strong></div>
           <div><span>Startkapital</span><strong id="start-capital">—</strong></div>
         </div>
-        <p class="index-description">SIX Portfolio Return Index · Svensk aktiemarknad inklusive utdelningar</p>
+        <div class="start-portfolios" id="start-portfolios" aria-label="De fem portföljerna"></div>
         <div class="button-row">
           <button class="button primary" id="start-button">Starta</button>
           <button class="button secondary" data-open-settings>Inställningar</button>
@@ -39,6 +37,14 @@
         <div>
           <p class="eyebrow">SIX Portfolio Return Index</p>
           <h2 id="historical-date">—</h2>
+        </div>
+        <div class="inflation-indicator hidden" id="inflation-indicator" aria-label="Historisk inflation">
+          <span>Inflation</span>
+          <div class="inflation-periods">
+            <div><small>1 år</small><strong>—</strong></div>
+            <div><small>2 år</small><strong>—</strong></div>
+            <div><small>3 år</small><strong>—</strong></div>
+          </div>
         </div>
         <div class="period-chip" id="period-chip">—</div>
       </header>
@@ -104,8 +110,7 @@
           <label>Fondavgift, högre exponering <span><input name="higherExposureFundFeePct" type="number" min="0" step="0.01"> %</span></label>
           <label>Månadssparande <span><input name="monthlySaving" type="number" min="0" step="100"> kr</span></label>
           <label>Årlig skatt <span><input name="annualTaxPct" type="number" min="0" step="0.01"> %</span></label>
-          <label>Antagen inflation <span><input name="annualInflationPct" type="number" min="0" step="0.1"> %</span></label>
-          <label>Inflationsjustering <select name="inflationEnabled"><option value="true">På</option><option value="false">Av</option></select></label>
+          <label>Visa inflation <select name="inflationEnabled"><option value="true">På</option><option value="false">Av</option></select><small>Historisk KPI, SCB</small></label>
           <label>Speltid för 20 år <select name="playbackSeconds20Years"><option value="30">30 sekunder</option><option value="60">60 sekunder</option><option value="90">90 sekunder</option><option value="120">120 sekunder</option></select></label>
         </div>
         <div class="settings-actions">
@@ -120,6 +125,7 @@
     </section>
   </main>
   <script src="data/sixprx.js"></script>
+  <script src="data/kpi.js"></script>
   <script src="js/app.bundle.js"></script>
 </body>
 </html>

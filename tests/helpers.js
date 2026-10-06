@@ -17,7 +17,6 @@ export function settings(overrides = {}) {
     monthlySaving: 0,
     annualTaxPct: 0,
     inflationEnabled: false,
-    annualInflationPct: 0,
     playbackSeconds20Years: 90,
     ...overrides
   };

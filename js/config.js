@@ -9,7 +9,6 @@ export const DEFAULT_SETTINGS = Object.freeze({
   monthlySaving: 2_000,
   annualTaxPct: 0.35,
   inflationEnabled: true,
-  annualInflationPct: 2.0,
   playbackSeconds20Years: 90
 });
 
@@ -28,7 +27,7 @@ export function validateSettings(input) {
     if (!Number.isFinite(settings[key]) || settings[key] <= 0) throw new Error(`${key} must be positive`);
   }
   if (![5, 10, 15, 20].includes(settings.periodYears)) throw new Error("periodYears must be 5, 10, 15, or 20");
-  const nonNegative = ["standardFundFeePct", "originalInsuranceFeePct", "reducedInsuranceFeePct", "higherExposureFundFeePct", "monthlySaving", "annualTaxPct", "annualInflationPct"];
+  const nonNegative = ["standardFundFeePct", "originalInsuranceFeePct", "reducedInsuranceFeePct", "higherExposureFundFeePct", "monthlySaving", "annualTaxPct"];
   for (const key of nonNegative) {
     if (!Number.isFinite(settings[key]) || settings[key] < 0) throw new Error(`${key} must be non-negative`);
   }

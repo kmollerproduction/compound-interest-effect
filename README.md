@@ -26,4 +26,6 @@ Testerna täcker beräkningsordning, avgifter, skatt, bidragsneutral tidsvägd a
 
 `data/sixprx_monthly_2006-10_2026-09.csv` är den auktoritativa datakällan och innehåller 240 oförändrade månadsavkastningar från oktober 2006 till september 2026.
 
-`data/sixprx.js` genereras från CSV-filen och används av webbläsaren så att programmet även fungerar via `file://`. Testsviten verifierar att båda datakällorna är exakt identiska. `js/app.bundle.js` genereras från de modulära källfilerna i `js/`; beräkningslogiken underhålls alltså endast på ett ställe.
+`data/kpi_monthly_2006-10_2026-08.csv` är den auktoritativa inflationskällan med 239 månatliga KPI-observationer från SCB (KPI totalt, 2020=100). September 2026 saknar ännu en officiell observation och använder därför uttryckligen den senast tillgängliga observationen, augusti 2026, utan uppskattning eller en fabricerad datarad.
+
+`data/sixprx.js` och `data/kpi.js` genereras från respektive CSV-fil och används av webbläsaren så att programmet även fungerar via `file://`. Testsviten verifierar att runtime-data och auktoritativa CSV-källor är exakt identiska. `js/app.bundle.js` genereras från de modulära källfilerna i `js/`; beräkningslogiken underhålls alltså endast på ett ställe.
