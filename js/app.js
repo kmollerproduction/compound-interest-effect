@@ -4,7 +4,7 @@ import { runSimulation } from "./simulation-engine.js";
 import { buildAnalysis } from "./analysis.js";
 import { PlaybackController, scaledPlaybackDurationMs } from "./playback-controller.js";
 import { GraphRenderer } from "./graph-renderer.js";
-import { formatCurrency, formatMonth, formatPercent, valueClass } from "./formatters.js";
+import { formatCurrency, formatMonth, formatPercent, inflationAdjustedValue, rollingReturnClass, valueClass } from "./formatters.js";
 
 const screens = [...document.querySelectorAll(".screen")];
 const form = document.querySelector("#settings-form");
@@ -62,8 +62,9 @@ function renderFrame(position, status) {
     const card = document.querySelector(`[data-portfolio="${portfolio.definition.id}"]`);
     card.querySelector(".portfolio-value").textContent = formatCurrency(state.value);
     const inflation = card.querySelector(".inflation-value");
+    inflation.classList.toggle("hidden", !settings.inflationEnabled);
     inflation.textContent = settings.inflationEnabled
-      ? `Inflationsjusterat: ${formatCurrency(state.value / ((1 + settings.annualInflationPct / 100) ** (monthIndex / 12)))}` : "";
+      ? `Inflationsjusterat: ${formatCurrency(inflationAdjustedValue(state.value, settings.annualInflationPct, monthIndex))}` : "";
     const difference = state.value - reference.value;
     const differenceNode = card.querySelector(".difference");
     differenceNode.textContent = index === 0 ? "Referens" : `${formatCurrency(difference, true)} mot referens`;
@@ -72,7 +73,7 @@ function renderFrame(position, status) {
       const months = [12, 24, 36][rollingIndex];
       const value = state.rollingReturns[months];
       node.textContent = formatPercent(value);
-      node.className = value === null ? "neutral" : valueClass(value);
+      node.className = rollingReturnClass(value);
     });
   });
   graph.render(result, position, status !== "running");
@@ -92,6 +93,7 @@ function beginPlayback() {
   document.querySelector("#end-actions").classList.add("hidden");
   document.querySelector("#pause-button").classList.remove("hidden");
   document.querySelector("#resume-button").classList.add("hidden");
+  document.querySelector("#abort-button").classList.remove("hidden");
   graph.reset();
   createPlayback();
   playback.start();
@@ -100,6 +102,7 @@ function beginPlayback() {
 function showEndActions() {
   document.querySelector("#pause-button").classList.add("hidden");
   document.querySelector("#resume-button").classList.add("hidden");
+  document.querySelector("#abort-button").classList.add("hidden");
   document.querySelector("#end-actions").classList.remove("hidden");
 }
 
@@ -110,18 +113,31 @@ function renderAnalysis() {
   document.querySelector("#analysis-summary").innerHTML = finalStates.map((state, index) => `
     <div class="summary-card" style="--portfolio-color:${result.portfolios[index].definition.color}">
       <span>${result.portfolios[index].definition.name}</span><strong>${formatCurrency(state.value)}</strong>
+      ${settings.inflationEnabled ? `<p class="summary-inflation">Inflationsjusterat: ${formatCurrency(inflationAdjustedValue(state.value, settings.annualInflationPct, result.monthCount))}</p>` : ""}
     </div>`).join("");
   const steps = [
     { title: "Sänkt försäkringsavgift", primary: analysis.insuranceDecision.finalValueEffect, details: [["Undvikna försäkringsavgifter", analysis.insuranceDecision.insuranceFeesAvoided], ["Effekt på slutkapital", analysis.insuranceDecision.finalValueEffect]] },
-    { title: "Högre exponering inklusive kostnad", primary: analysis.higherExposureDecision.finalValueEffect, details: [["Fondavgifter · Portfölj 2", analysis.higherExposureDecision.portfolio2FundFees], ["Fondavgifter · Portfölj 3", analysis.higherExposureDecision.portfolio3FundFees]] },
+    { title: "Högre exponering inklusive kostnad", primary: analysis.higherExposureDecision.finalValueEffect, details: [["Effekt på slutkapital", analysis.higherExposureDecision.finalValueEffect]] },
     { title: "Månadssparande", primary: analysis.savingDecision.finalValueEffect, details: [["Totala insättningar", analysis.savingDecision.totalContributions], ["Avkastning från insättningarna", analysis.savingDecision.returnGenerated]] }
   ];
-  document.querySelector("#analysis-steps").innerHTML = steps.map((step, index) => `
+  document.querySelector("#analysis-steps").innerHTML = `<p class="analysis-group-label">En sak i taget</p>${steps.map((step, index) => `
     <article class="analysis-step"><span class="step-number">Beslut ${index + 1}</span><h2>${step.title}</h2>
       <div class="analysis-primary ${valueClass(step.primary)}">${formatCurrency(step.primary, true)}</div>
       ${step.details.map(([label, value]) => `<div class="analysis-detail"><span>${label}</span><strong>${formatCurrency(value, label.includes("Effekt"))}</strong></div>`).join("")}
-    </article>`).join("");
-  document.querySelector("#cost-table").innerHTML = `<thead><tr><th>Portfölj</th><th>Fondavgifter</th><th>Försäkringsavgifter</th><th>Skatt</th><th>Insättningar</th></tr></thead><tbody>${finalStates.map((state, index) => `<tr><td>${result.portfolios[index].definition.name}</td><td>${formatCurrency(state.cumulativeFundFees)}</td><td>${formatCurrency(state.cumulativeInsuranceFees)}</td><td>${formatCurrency(state.cumulativeTax)}</td><td>${formatCurrency(state.cumulativeContributions)}</td></tr>`).join("")}</tbody>`;
+    </article>`).join("")}
+    <p class="analysis-group-label">Alla tre besluten tillsammans</p>
+    <article class="analysis-step combined"><span class="step-number">Kombinerat resultat</span><h2>Alla tre</h2>
+      <div class="analysis-primary ${valueClass(analysis.combinedDecision.finalValueEffect)}">${formatCurrency(analysis.combinedDecision.finalValueEffect, true)}</div>
+      <div class="analysis-detail"><span>Total effekt på slutkapital</span><strong>${formatCurrency(analysis.combinedDecision.finalValueEffect, true)}</strong></div>
+      <p class="combined-note">När besluten kombineras förstärker de varandra över tid. Därför blir den samlade effekten större än summan av de tre isolerade effekterna.</p>
+    </article>`;
+  const costRows = [
+    ["Fondavgifter", "cumulativeFundFees"],
+    ["Försäkringsavgifter", "cumulativeInsuranceFees"],
+    ["Skatt", "cumulativeTax"],
+    ["Insättningar", "cumulativeContributions"]
+  ];
+  document.querySelector("#cost-table").innerHTML = `<thead><tr><th>Faktiskt belopp</th>${result.portfolios.map((portfolio) => `<th>${portfolio.definition.name}</th>`).join("")}</tr></thead><tbody>${costRows.map(([label, key]) => `<tr><td>${label}</td>${finalStates.map((state) => `<td>${formatCurrency(state[key])}</td>`).join("")}</tr>`).join("")}</tbody>`;
 }
 
 function fillSettingsForm(values) {
@@ -146,6 +162,10 @@ document.querySelector("#resume-button").addEventListener("click", () => {
   playback.resume();
   document.querySelector("#resume-button").classList.add("hidden");
   document.querySelector("#pause-button").classList.remove("hidden");
+});
+document.querySelector("#abort-button").addEventListener("click", () => {
+  playback?.cancel();
+  showScreen("start-screen");
 });
 document.querySelector("#analysis-button").addEventListener("click", () => showScreen("analysis-screen"));
 document.querySelector("#analysis-back").addEventListener("click", () => showScreen("presentation-screen"));

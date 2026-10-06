@@ -26,3 +26,12 @@ test("Y-axis ignores future portfolio values", () => {
   const atThree = getVisibleYDomain([normal, futureExtreme], 3);
   assert.ok(atThree.maximum > 1_000_000_000);
 });
+
+test("visible Y-axis includes the fifth portfolio", () => {
+  const ordinary = [portfolio([1000, 1100]), portfolio([1000, 1050]), portfolio([1000, 900]), portfolio([1000, 1200])];
+  const fifth = portfolio([1000, 5000]);
+  const withoutFifth = getVisibleYDomain(ordinary, 1);
+  const withFifth = getVisibleYDomain([...ordinary, fifth], 1);
+  assert.ok(withFifth.maximum > withoutFifth.maximum);
+  assert.ok(withFifth.maximum > 5000);
+});

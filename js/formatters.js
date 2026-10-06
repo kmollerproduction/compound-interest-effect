@@ -24,3 +24,12 @@ export function formatMonth(month) {
 export function valueClass(value) {
   return value > 0.5 ? "positive" : value < -0.5 ? "negative" : "neutral";
 }
+
+export function rollingReturnClass(value) {
+  if (value === null || value === undefined || value === 0) return "neutral";
+  return value > 0 ? "positive" : "negative";
+}
+
+export function inflationAdjustedValue(value, annualInflationPct, elapsedMonths) {
+  return value / ((1 + annualInflationPct / 100) ** (elapsedMonths / 12));
+}

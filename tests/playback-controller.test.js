@@ -39,3 +39,16 @@ test("pause and resume preserve the exact playback position", () => {
   h.setTime(1000); h.tick();
   assert.equal(h.controller.position, 4.5);
 });
+
+test("cancel stops playback and clears the queued animation frame", () => {
+  const h = controllerHarness();
+  h.controller.start();
+  h.setTime(250); h.tick();
+  const cancelledAt = h.controller.position;
+
+  h.controller.cancel();
+  h.setTime(900); h.tick();
+
+  assert.equal(h.controller.status, "cancelled");
+  assert.equal(h.controller.position, cancelledAt);
+});

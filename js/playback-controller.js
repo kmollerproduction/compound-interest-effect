@@ -46,6 +46,12 @@ export class PlaybackController {
     this.frameId = this.requestFrame(this.tick);
   }
 
+  cancel() {
+    if (this.status === "cancelled") return;
+    this.stopFrame();
+    this.status = "cancelled";
+  }
+
   updatePosition(timestamp) {
     const elapsed = timestamp - this.anchorTime;
     this.position = Math.min(this.totalMonths, this.anchorPosition + (elapsed / this.durationMs) * this.totalMonths);

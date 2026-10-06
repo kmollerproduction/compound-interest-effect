@@ -1,6 +1,6 @@
 # Historisk sparsimulator
 
-En statisk presentationsapplikation som jämför fyra ekonomiska beslut mot samma historiska månadsavkastning för SIX Portfolio Return Index (SIXPRX).
+En statisk presentationsapplikation som jämför fem portföljer och isolerar tre ekonomiska beslut mot samma historiska månadsavkastning för SIX Portfolio Return Index (SIXPRX).
 
 ## Köra lokalt
 

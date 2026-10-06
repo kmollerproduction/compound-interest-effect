@@ -18,6 +18,8 @@ test("first partial year uses 50% of starting capital and Oct-Dec contributions"
   assert.equal(result.portfolios[0].states.at(-1).tax, 5);
   assert.equal(result.portfolios[3].states.at(-1).taxBase, 650);
   assert.equal(result.portfolios[3].states.at(-1).tax, 6.5);
+  assert.equal(result.portfolios[4].states.at(-1).taxBase, 650);
+  assert.equal(result.portfolios[4].states.at(-1).tax, 6.5);
 });
 
 test("complete-year tax base uses opening value plus full Jan-Jun and half Jul-Dec contributions", () => {
@@ -25,6 +27,8 @@ test("complete-year tax base uses opening value plus full Jan-Jun and half Jul-D
   const december2007 = result.portfolios[3].states.find((state) => state.month === "2007-12");
   assert.equal(december2007.taxBase, 1293.5 + 600 + 300);
   assert.equal(december2007.tax, 21.935);
+  const combinedDecember2007 = result.portfolios[4].states.find((state) => state.month === "2007-12");
+  assert.equal(combinedDecember2007.taxBase, 1293.5 + 600 + 300);
 });
 
 test("accumulated tax equals exact deductions", () => {

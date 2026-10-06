@@ -7,13 +7,14 @@ export function annualPctToMonthlyRate(annualPct) {
 }
 
 export function buildPortfolioDefinitions(settings) {
-  return PORTFOLIO_META.map((meta, index) => ({
-    ...meta,
-    exposure: index < 2 ? 1 : settings.exposureMultiplier,
-    fundFeePct: index < 2 ? settings.standardFundFeePct : settings.higherExposureFundFeePct,
-    insuranceFeePct: index === 0 ? settings.originalInsuranceFeePct : settings.reducedInsuranceFeePct,
-    monthlyContribution: index === 3 ? settings.monthlySaving : 0
-  }));
+  const financialDefinitions = {
+    reference: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0 },
+    lowerFee: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: 0 },
+    higherExposure: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: 0 },
+    monthlySaving: { exposure: 1, fundFeePct: settings.standardFundFeePct, insuranceFeePct: settings.originalInsuranceFeePct, monthlyContribution: settings.monthlySaving },
+    allThree: { exposure: settings.exposureMultiplier, fundFeePct: settings.higherExposureFundFeePct, insuranceFeePct: settings.reducedInsuranceFeePct, monthlyContribution: settings.monthlySaving }
+  };
+  return PORTFOLIO_META.map((meta) => ({ ...meta, ...financialDefinitions[meta.id] }));
 }
 
 function createInitialState(definition, startingCapital) {

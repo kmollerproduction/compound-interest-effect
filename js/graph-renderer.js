@@ -40,7 +40,7 @@ export class GraphRenderer {
   render(result, position, frozen = false) {
     const width = this.svg.clientWidth || 1200;
     const height = this.svg.clientHeight || 400;
-    const margin = { top: 14, right: 150, bottom: 34, left: 76 };
+    const margin = { top: 14, right: 170, bottom: 34, left: 76 };
     const plotWidth = width - margin.left - margin.right;
     const plotHeight = height - margin.top - margin.bottom;
     const animatedSeries = result.portfolios.map((portfolio) => getAnimatedSeries(portfolio, position));
@@ -89,26 +89,26 @@ export class GraphRenderer {
     }
 
     const eventLayer = node("g", { class: "historical-events" });
-    const eventBoxWidth = 242;
-    const eventBoxHeight = 43;
+    const eventBoxWidth = 324;
+    const eventBoxHeight = 58;
     const revealedEvents = getRevealedHistoricalEvents(HISTORICAL_EVENTS, result.history, position);
     const placedEvents = placeHistoricalEventBoxes(revealedEvents, { domainEnd: xDomain.end, plotLeft: margin.left, plotWidth, boxWidth: eventBoxWidth });
     for (const event of placedEvents) {
       const anchorX = event.anchorX;
       const anchorY = margin.top + plotHeight;
-      const boxY = anchorY - 22 - eventBoxHeight - event.level * 55;
+      const boxY = anchorY - 22 - eventBoxHeight - event.level * 70;
       const boxX = event.boxX;
       const connectorX = Math.max(boxX + 14, Math.min(anchorX, boxX + eventBoxWidth - 14));
       eventLayer.append(node("line", { x1: anchorX, y1: anchorY - 2, x2: connectorX, y2: boxY + eventBoxHeight, class: "event-connector" }));
       eventLayer.append(node("circle", { cx: anchorX, cy: anchorY - 2, r: 3, class: "event-anchor" }));
       eventLayer.append(node("rect", { x: boxX, y: boxY, width: eventBoxWidth, height: eventBoxHeight, rx: 6, class: "event-box" }));
-      eventLayer.append(node("text", { x: boxX + 10, y: boxY + 16, class: "event-title" }, event.title));
-      eventLayer.append(node("text", { x: boxX + 10, y: boxY + 32, class: "event-description" }, event.description));
+      eventLayer.append(node("text", { x: boxX + 12, y: boxY + 21, class: "event-title" }, event.title));
+      eventLayer.append(node("text", { x: boxX + 12, y: boxY + 43, class: "event-description" }, event.description));
     }
     this.svg.append(eventLayer);
 
     labels.sort((a, b) => a.y - b.y);
-    const gap = 16;
+    const gap = 20;
     for (let i = 1; i < labels.length; i += 1) labels[i].y = Math.max(labels[i].y, labels[i - 1].y + gap);
     const overflow = labels.at(-1).y - (height - margin.bottom);
     if (overflow > 0) labels.forEach((label) => { label.y -= overflow; });

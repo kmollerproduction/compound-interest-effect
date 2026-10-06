@@ -1,11 +1,23 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { runSimulation, annualPctToMonthlyRate } from "../js/simulation-engine.js";
+import { runSimulation, annualPctToMonthlyRate, buildPortfolioDefinitions } from "../js/simulation-engine.js";
 import { flatHistory, settings } from "./helpers.js";
 
 test("all portfolios have identical starting values", () => {
   const result = runSimulation(flatHistory(3), settings());
-  assert.deepEqual(result.portfolios.map((p) => p.states[0].value), [1000, 1000, 1000, 1000]);
+  assert.deepEqual(result.portfolios.map((p) => p.states[0].value), [1000, 1000, 1000, 1000, 1000]);
+});
+
+test("five portfolio definitions isolate the three decisions and combine them only in portfolio 5", () => {
+  const configured = settings({ standardFundFeePct: .3, originalInsuranceFeePct: .65, reducedInsuranceFeePct: 0, exposureMultiplier: 1.4, higherExposureFundFeePct: 1, monthlySaving: 200 });
+  const definitions = buildPortfolioDefinitions(configured);
+  assert.deepEqual(definitions.map(({ exposure, fundFeePct, insuranceFeePct, monthlyContribution }) => ({ exposure, fundFeePct, insuranceFeePct, monthlyContribution })), [
+    { exposure: 1, fundFeePct: .3, insuranceFeePct: .65, monthlyContribution: 0 },
+    { exposure: 1, fundFeePct: .3, insuranceFeePct: 0, monthlyContribution: 0 },
+    { exposure: 1.4, fundFeePct: 1, insuranceFeePct: .65, monthlyContribution: 0 },
+    { exposure: 1, fundFeePct: .3, insuranceFeePct: .65, monthlyContribution: 200 },
+    { exposure: 1.4, fundFeePct: 1, insuranceFeePct: 0, monthlyContribution: 200 }
+  ]);
 });
 
 test("all portfolios match when differences are disabled", () => {
@@ -29,6 +41,7 @@ test("1.4x exposure applies exactly 1.4 times each monthly percentage return bef
 test("monthly contribution is added before the market return", () => {
   const result = runSimulation(flatHistory(1, 10), settings({ exposureMultiplier: 1, monthlySaving: 100 }));
   assert.equal(result.portfolios[3].states[1].value, 1210);
+  assert.equal(result.portfolios[4].states[1].value, 1210);
 });
 
 test("effective annual fees use equivalent monthly rates and tracked totals equal deductions", () => {
@@ -43,4 +56,5 @@ test("effective annual fees use equivalent monthly rates and tracked totals equa
 test("contribution totals equal exact deposits", () => {
   const result = runSimulation(flatHistory(17), settings({ monthlySaving: 200 }));
   assert.equal(result.portfolios[3].states.at(-1).cumulativeContributions, 3400);
+  assert.equal(result.portfolios[4].states.at(-1).cumulativeContributions, 3400);
 });

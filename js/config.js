@@ -17,7 +17,8 @@ export const PORTFOLIO_META = Object.freeze([
   { id: "reference", name: "Gör ingenting", shortName: "Gör ingenting", color: "#4769e8" },
   { id: "lowerFee", name: "Sänk avgiften", shortName: "Sänk avgiften", color: "#9a5ce5" },
   { id: "higherExposure", name: "Högre exponering", shortName: "Högre exponering", color: "#e29935" },
-  { id: "higherExposureSaving", name: "Högre exponering + sparande", shortName: "Exponering + sparande", color: "#18a7a1" }
+  { id: "monthlySaving", name: "Månadsspara", shortName: "Månadsspara", color: "#18a7a1" },
+  { id: "allThree", name: "Alla tre", shortName: "Alla tre", color: "#cf5b91" }
 ]);
 
 export function validateSettings(input) {
