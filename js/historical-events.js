@@ -43,8 +43,17 @@ export function placeHistoricalEventBoxes(events, { domainEnd, plotLeft, plotWid
       ...(hasValidPrevious ? [previous] : []),
       ...Array.from({ length: levelCount }, (_, index) => index).filter((index) => index !== previous)
     ];
-    const level = candidates.find((candidate) => occupied[candidate].every(({ start, end }) => boxX + currentBoxWidth + gap <= start || boxX >= end + gap)) ?? levelCount - 1;
-    occupied[level].push({ start: boxX, end: boxX + currentBoxWidth });
-    return { ...event, anchorX, boxX, boxWidth: currentBoxWidth, level };
+    let level = candidates.find((candidate) => occupied[candidate].every(({ start, end }) => boxX + currentBoxWidth + gap <= start || boxX >= end + gap)) ?? levelCount - 1;
+    let placedBoxX = boxX;
+    if (event.state === "full" && level > 1 && occupied[1]?.length) {
+      const rightmostRowTwoEdge = Math.max(...occupied[1].map(({ end }) => end));
+      const rowTwoCandidateX = rightmostRowTwoEdge + gap;
+      if (rowTwoCandidateX + currentBoxWidth <= plotLeft + plotWidth - 4) {
+        level = 1;
+        placedBoxX = rowTwoCandidateX;
+      }
+    }
+    occupied[level].push({ start: placedBoxX, end: placedBoxX + currentBoxWidth });
+    return { ...event, anchorX, boxX: placedBoxX, boxWidth: currentBoxWidth, level };
   });
 }

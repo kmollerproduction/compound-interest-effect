@@ -126,3 +126,29 @@ test("adding a non-colliding event does not move an older event from its valid l
   ], { domainEnd: 100, plotLeft: 76, plotWidth: 1000, boxWidth: 520, previousLevels });
   assert.deepEqual(placed.map((event) => event.level), [1, 0]);
 });
+
+test("an annotation above row two uses free space to the right on row two", () => {
+  const events = [
+    { month: "a", position: 50, boxWidth: 200 },
+    { month: "b", position: 51, boxWidth: 200 },
+    { month: "c", position: 52, boxWidth: 200, state: "full" }
+  ];
+  const placed = placeHistoricalEventBoxes(events, { domainEnd: 100, plotLeft: 0, plotWidth: 1000, boxWidth: 520 });
+  assert.deepEqual(placed.map(({ level }) => level), [0, 1, 1]);
+  assert.deepEqual(placed.slice(0, 2).map(({ boxX }) => boxX), [400, 410]);
+  assert.equal(placed[2].boxX, placed[1].boxX + placed[1].boxWidth + 8);
+  assert.ok(placed[2].boxX + placed[2].boxWidth <= 996);
+  assert.equal(placed[2].anchorX, 520);
+});
+
+test("an annotation keeps its original higher row when row two has insufficient right-side space", () => {
+  const events = [
+    { month: "a", position: 50, boxWidth: 400 },
+    { month: "b", position: 51, boxWidth: 400 },
+    { month: "c", position: 52, boxWidth: 400, state: "full" }
+  ];
+  const placed = placeHistoricalEventBoxes(events, { domainEnd: 100, plotLeft: 0, plotWidth: 1000, boxWidth: 520 });
+  assert.deepEqual(placed.map(({ level }) => level), [0, 1, 2]);
+  assert.equal(placed[2].boxX, 320);
+  assert.equal(placed[2].anchorX, 520);
+});
